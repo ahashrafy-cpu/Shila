@@ -1401,17 +1401,50 @@ with tabs[t]:
             st.markdown("---")
             
     # 1. DYNAMIC LOGIC: Hourly for SnappFood, Daily for standard
+    # ==========================================
+    # TIME GRANULARITY SELECTOR
+    # ==========================================
     if is_sf:
+        st.markdown("### 📈 Performance Trends")
+        granularity = st.radio(
+            "Select time view:",
+            ["🕒 Hourly", "📅 Daily", "📆 Weekly", "🗓️ Monthly"],
+            horizontal=True,
+            key="trend_granularity"
+        )
+    else:
+        granularity = "📅 Daily"  # Default for standard files
+
+    # ==========================================
+    # LOAD DATA BASED ON GRANULARITY
+    # ==========================================
+    if granularity == "🕒 Hourly":
         st.markdown(f"### 🕒 {L('hourly_rating_trend')}")
         st.caption("Performance across the 24-hour cycle")
-        data = analyzer.get_hourly_trends() # Ensure this method exists in your Analyzer
+        data = analyzer.get_hourly_trends()
         x_col = 'hour'
         x_label = "Hour (00:00 - 23:00)"
-    else:
+
+    elif granularity == "📅 Daily":
         st.markdown(f"### 📅 {L('daily_trend')}")
+        st.caption("Day-by-day performance")
         data = analyzer.get_daily_trends()
         x_col = 'date'
         x_label = "Date"
+
+    elif granularity == "📆 Weekly":
+        st.markdown("### 📆 Weekly Trends")
+        st.caption("Aggregated weekly performance")
+        data = analyzer.get_weekly_trends()  # NEW METHOD NEEDED
+        x_col = 'week'
+        x_label = "Week"
+
+    elif granularity == "🗓️ Monthly":
+        st.markdown("### 🗓️ Monthly Trends")
+        st.caption("Month-over-month performance")
+        data = analyzer.get_monthly_trends()  # NEW METHOD NEEDED
+        x_col = 'month'
+        x_label = "Month"
 
     if not data.empty:
         fig = make_subplots(
@@ -4077,3 +4110,4 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
