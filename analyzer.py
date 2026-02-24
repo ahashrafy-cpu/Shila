@@ -1177,4 +1177,72 @@ class ShilaAnalyzer:
         matrix = pd.crosstab(df['rating'], df['sentiment'], margins=True)
     
         return matrix
+
+    def get_weekly_trends(self):
+        """Aggregate trends by week (ISO week number)"""
+        try:
+            df = self.df.copy()
+            date_col = self.cols.get('CREATED_AT') or self.cols.get('DATE')
+            rating_col = self.cols.get('RATING')
+            
+            if date_col not in df.columns or rating_col not in df.columns:
+                return pd.DataFrame()
+            
+            df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+            df = df.dropna(subset=[date_col, rating_col])
+            
+            # Create a week label like "2025-W03" for sorting + readability
+            df['week'] = df[date_col].dt.strftime('%Y-W%V')
+            
+            weekly = df.groupby('week').agg(
+                avg_rating=(rating_col, 'mean'),
+                order_count=(rating_col, 'count')
+            ).reset_index()
+            
+            weekly['avg_rating'] = weekly['avg_rating'].round(2)
+            weekly = weekly.sort_values('week')
+            
+            # Add a rolling 4-week average if enough data
+            if len(weekly) >= 4:
+                weekly['rating_4week_avg'] = weekly['avg_rating'].rolling(4, min_periods=1).mean().round(2)
+            
+            return weekly
+            
+        except Exception as e:
+            print(f"Weekly trends error: {e}")
+            return pd.DataFrame()
+
+    def get_monthly_trends(self):
+        """Aggregate trends by calendar month"""
+        try:
+            df = self.df.copy()
+            date_col = self.cols.get('CREATED_AT') or self.cols.get('DATE')
+            rating_col = self.cols.get('RATING')
+            
+            if date_col not in df.columns or rating_col not in df.columns:
+                return pd.DataFrame()
+            
+            df[date_col] = pd.to_datetime(df[date_col], errors='coerce')
+            df = df.dropna(subset=[date_col, rating_col])
+            
+            # Create month label like "2025-01"
+            df['month'] = df[date_col].dt.strftime('%Y-%m')
+            
+            monthly = df.groupby('month').agg(
+                avg_rating=(rating_col, 'mean'),
+                order_count=(rating_col, 'count')
+            ).reset_index()
+            
+            monthly['avg_rating'] = monthly['avg_rating'].round(2)
+            monthly = monthly.sort_values('month')
+            
+            # Month-over-month changes
+            monthly['rating_change'] = monthly['avg_rating'].diff().round(2)
+            monthly['orders_change_pct'] = monthly['order_count'].pct_change().mul(100).round(1)
+            
+            return monthly
+            
+        except Exception as e:
+            print(f"Monthly trends error: {e}")
+            return pd.DataFrame()
     
