@@ -1446,6 +1446,9 @@ with tabs[t]:
         x_col = 'month'
         x_label = "Month"
 
+    # ==========================================
+    # RENDER CHART (works for all granularities)
+    # ==========================================
     if not data.empty:
         fig = make_subplots(
             rows=2, cols=1, 
@@ -1453,18 +1456,24 @@ with tabs[t]:
             vertical_spacing=0.2
         )
         
-        # Row 1: Rating Trend (Daily or Hourly)
+        # Row 1: Rating Trend
         fig.add_trace(go.Scatter(
             x=data[x_col], y=data['avg_rating'], 
             mode='lines+markers', name='Rating', 
             line=dict(color='#2196F3', width=3)
         ), row=1, col=1)
 
-        # Add 7-Day Trend ONLY for Daily view
-        if not is_sf and 'rating_7day_avg' in data.columns:
-             fig.add_trace(go.Scatter(
+        # Add rolling average line where available
+        if 'rating_7day_avg' in data.columns:
+            fig.add_trace(go.Scatter(
                 x=data[x_col], y=data['rating_7day_avg'], 
                 mode='lines', name='7-Day Trend', 
+                line=dict(color='#E1E4E8', width=2)
+            ), row=1, col=1)
+        elif 'rating_4week_avg' in data.columns:
+            fig.add_trace(go.Scatter(
+                x=data[x_col], y=data['rating_4week_avg'], 
+                mode='lines', name='4-Week Trend', 
                 line=dict(color='#E1E4E8', width=2)
             ), row=1, col=1)
         
@@ -1477,14 +1486,53 @@ with tabs[t]:
         # Axis Formatting
         fig.update_xaxes(title_text=x_label, row=2, col=1)
         
-        # Force 24-hour ticks for SnappFood
-        if is_sf:
+        # Force integer ticks for hourly view
+        if granularity == "🕒 Hourly":
             fig.update_xaxes(tickmode='linear', tick0=0, dtick=1, row=1, col=1)
             fig.update_xaxes(tickmode='linear', tick0=0, dtick=1, row=2, col=1)
+        
+        # Rotate labels for weekly/monthly if many data points
+        if granularity in ["📆 Weekly", "🗓️ Monthly"]:
+            fig.update_xaxes(tickangle=-45, row=1, col=1)
+            fig.update_xaxes(tickangle=-45, row=2, col=1)
 
         st.plotly_chart(clean_chart(fig, 600), use_container_width=True)
+        
+        # ==========================================
+        # CHANGE METRICS (for weekly/monthly)
+        # ==========================================
+        if granularity in ["📆 Weekly", "🗓️ Monthly"] and len(data) > 1:
+            st.markdown("---")
+            latest = data.iloc[-1]
+            prev = data.iloc[-2]
+            
+            period_label = "Week" if granularity == "📆 Weekly" else "Month"
+            
+            cols_metric = st.columns(3)
+            cols_metric[0].metric(
+                f"Latest {period_label}", 
+                latest[x_col],
+                f"Rating: {latest['avg_rating']}"
+            )
+            
+            rating_delta = latest['avg_rating'] - prev['avg_rating']
+            cols_metric[1].metric(
+                "Rating Change", 
+                f"{latest['avg_rating']:.2f}", 
+                f"{rating_delta:+.2f}"
+            )
+            
+            if prev['order_count'] > 0:
+                order_delta_pct = ((latest['order_count'] - prev['order_count']) / prev['order_count']) * 100
+            else:
+                order_delta_pct = 0
+            cols_metric[2].metric(
+                "Orders Change", 
+                f"{int(latest['order_count']):,}", 
+                f"{order_delta_pct:+.1f}%"
+            )
     else:
-        st.info("Insufficient data to generate time-based trends.")
+        st.info("Insufficient data to generate trends for this time period.")
     
     # 2. MONTH-OVER-MONTH (Hide for single-day SnappFood files)
     if not is_sf:
@@ -4110,4 +4158,5 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
