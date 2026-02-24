@@ -1436,6 +1436,8 @@ with tabs[t]:
         st.markdown("### 📆 Weekly Trends")
         st.caption("Aggregated weekly performance")
         data = analyzer.get_weekly_trends()  # NEW METHOD NEEDED
+        st.write("DEBUG weekly:", len(data), "rows")  # ← ADD
+        st.dataframe(data)                             # ← ADD
         x_col = 'week'
         x_label = "Week"
 
@@ -4158,5 +4160,6 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
