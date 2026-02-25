@@ -674,19 +674,19 @@ with col_nav_2:
         
         with m1:
             st.markdown('<div class="nav-link">', unsafe_allow_html=True)
-            if st.button("Services", key="nav_services", use_container_width=True):
+            if st.button("Services", key="nav_services", width=True):
                 st.info("Services clicked")
             st.markdown('</div>', unsafe_allow_html=True)
             
         with m2:
             st.markdown('<div class="nav-link">', unsafe_allow_html=True)
-            if st.button("Pricing", key="nav_pricing", use_container_width=True):
+            if st.button("Pricing", key="nav_pricing", width=True):
                 st.info("Pricing clicked")
             st.markdown('</div>', unsafe_allow_html=True)
             
         with m3:
             st.markdown('<div class="nav-link">', unsafe_allow_html=True)
-            if st.button("Account", key="nav_account", use_container_width=True):
+            if st.button("Account", key="nav_account", width=True):
                 st.info("Account clicked")
             st.markdown('</div>', unsafe_allow_html=True)
 
@@ -697,12 +697,12 @@ with col_nav_3:
     
     with c_btn_en:
         btn_type = "primary" if st.session_state.lang == 'en' else "secondary"
-        if st.button("EN", key="btn_en", type=btn_type, use_container_width=True):
+        if st.button("EN", key="btn_en", type=btn_type, width=True):
             st.session_state.lang = 'en'; st.rerun()
             
     with c_btn_fa:
         btn_type = "primary" if st.session_state.lang == 'fa' else "secondary"
-        if st.button("فارسی", key="btn_fa", type=btn_type, use_container_width=True):
+        if st.button("فارسی", key="btn_fa", type=btn_type, width=True):
             st.session_state.lang = 'fa'; st.rerun()
 
 # Add a little spacing after the dark header before the content starts
@@ -876,7 +876,7 @@ with tabs[t]:
                          color_continuous_scale=['#D32F2F','#FF9800','#FFEB3B','#8BC34A','#4CAF50'], 
                          text='Count')
             fig.update_traces(textposition='outside')
-            st.plotly_chart(clean_chart(fig, 350), use_container_width=True)
+            st.plotly_chart(clean_chart(fig, 350), width=True)
             
     with c2:
     # Only show NPS chart if NOT SnappFood
@@ -889,7 +889,7 @@ with tabs[t]:
                     color_discrete_map={'Promoter':'#4CAF50','Passive':'#FF9800','Detractor':'#D32F2F'},
                     text='Count'
                 )
-                st.plotly_chart(clean_chart(fig, 350), use_container_width=True)
+                st.plotly_chart(clean_chart(fig, 350), width=True)
         else:
             # OPTIONAL: Show something else for SnappFood, like a 5-star summary
             st.markdown("### 📊 Rating Summary")
@@ -902,10 +902,10 @@ with tabs[t]:
         c3, c4 = st.columns(2)
         with c3:
             st.markdown(f"#### 🚨 {L('top_issues')}")
-            st.dataframe(analyzer.get_top_issues(10), use_container_width=True, hide_index=True)
+            st.dataframe(analyzer.get_top_issues(10), width=True, hide_index=True)
         with c4:
             st.markdown(f"#### 🏆 {L('top_strengths')}")
-            st.dataframe(analyzer.get_top_strengths(10), use_container_width=True, hide_index=True)
+            st.dataframe(analyzer.get_top_strengths(10), width=True, hide_index=True)
     
     # ==========================================
     # CUSTOMER SEGMENTS SECTION (ENHANCED)
@@ -992,7 +992,7 @@ with tabs[t]:
                     plot_bgcolor='rgba(0,0,0,0)'
                 )
                 
-                st.plotly_chart(fig_matrix, use_container_width=True)
+                st.plotly_chart(fig_matrix, width=True)
             
             with col_legend:
                 st.markdown("**Segment Definitions:**")
@@ -1108,10 +1108,10 @@ if not st.session_state.get('is_snappfood', False):
         
             fig = clean_chart(fig, 500)
             fig.update_layout(xaxis_tickangle=-45, legend=dict(orientation="h", y=1.1))
-            st.plotly_chart(fig, use_container_width=True)
+            st.plotly_chart(fig, width=True)
             
             with st.expander("View Detailed Data Table"):
-                st.dataframe(pareto.head(20), use_container_width=True, hide_index=True)
+                st.dataframe(pareto.head(20), width=True, hide_index=True)
         else:
             st.info("Not enough issue data to generate Pareto analysis.")
             
@@ -1147,7 +1147,7 @@ if not st.session_state.get('is_snappfood', False):
             fig.add_annotation(x=0.8, y=0.1, text="Delighters (Unique)", showarrow=False, font=dict(color="green"))
             fig.add_annotation(x=0.1, y=0.9, text="Must-Be (Critical)", showarrow=False, font=dict(color="red"))
             
-            st.plotly_chart(clean_chart(fig, 500), use_container_width=True)
+            st.plotly_chart(clean_chart(fig, 500), width=True)
 
         else:
             st.info("Not enough strength/weakness data to generate Kano classification.")
@@ -1239,7 +1239,7 @@ with tabs[t]:
             showlegend=False
         )
         
-        st.plotly_chart(fig, use_container_width=True)
+        st.plotly_chart(fig, width=True)
         
         # ==========================================
         # COLOR SCALE LEGEND
@@ -1292,13 +1292,13 @@ with tabs[t]:
             st.markdown("#### 🏆 Top 5 Branches")
             top5 = br_stats.head(5)[['branch', 'avg_rating', 'rating_vs_avg', 'nps_score', 'order_count']].copy()
             top5['status'] = top5['rating_vs_avg'].apply(lambda x: '🏆' if x > 0.3 else '🟢')
-            st.dataframe(top5, use_container_width=True, hide_index=True)
+            st.dataframe(top5, width=True, hide_index=True)
         
         with col_bottom:
             st.markdown("#### ⚠️ Bottom 5 Branches")
             bottom5 = br_stats.tail(5)[['branch', 'avg_rating', 'rating_vs_avg', 'nps_score', 'order_count']].copy()
             bottom5['status'] = bottom5['rating_vs_avg'].apply(lambda x: '🔴' if x < -0.3 else '🟠')
-            st.dataframe(bottom5, use_container_width=True, hide_index=True)
+            st.dataframe(bottom5, width=True, hide_index=True)
         
         # ==========================================
         # FULL DATA TABLE (Expandable)
@@ -1308,7 +1308,7 @@ with tabs[t]:
             br_display['status'] = br_display['rating_vs_avg'].apply(
                 lambda x: '🏆 Great' if x > 0.3 else ('🟢 Good' if x > 0 else ('🟠 Weak' if x > -0.3 else '🔴 Poor'))
             )
-            st.dataframe(br_display, use_container_width=True, hide_index=True)
+            st.dataframe(br_display, width=True, hide_index=True)
     
     st.markdown("---")
     
@@ -1338,7 +1338,7 @@ with tabs[t]:
         )
         
         # Use container width but allow the height to scale
-        st.plotly_chart(fig_heat, use_container_width=True)
+        st.plotly_chart(fig_heat, width=True)
     else:
         st.info("No product data available for this selection. Check if 'نام محصولات سفارشی' is in your file.")
 
@@ -1363,7 +1363,7 @@ with tabs[t]:
         fig.add_vline(x=0, line_color="#3C4257", line_width=1)
         fig.update_layout(yaxis={'categoryorder':'total ascending'}) # Sort bars
         
-        st.plotly_chart(clean_chart(fig, 500), use_container_width=True)
+        st.plotly_chart(clean_chart(fig, 500), width=True)
     else:
         # Fallback if no comments or keywords were found
         st.info("💡 Not enough comment data found to perform aspect-based sentiment analysis.")
@@ -1498,7 +1498,7 @@ with tabs[t]:
             fig.update_xaxes(tickangle=-45, row=1, col=1)
             fig.update_xaxes(tickangle=-45, row=2, col=1)
 
-        st.plotly_chart(clean_chart(fig, 600), use_container_width=True)
+        st.plotly_chart(clean_chart(fig, 600), width=True)
         
         # ==========================================
         # CHANGE METRICS (for weekly/monthly)
@@ -1546,7 +1546,7 @@ with tabs[t]:
             fig_mom = make_subplots(specs=[[{"secondary_y": True}]])
             fig_mom.add_trace(go.Bar(x=mom['year_month'], y=mom['order_count'], name='Orders', marker_color='#4CAF50', opacity=0.6), secondary_y=False)
             fig_mom.add_trace(go.Scatter(x=mom['year_month'], y=mom['avg_rating'], name='Avg Rating', mode='lines+markers', line=dict(color='#2196F3', width=3)), secondary_y=True)
-            st.plotly_chart(clean_chart(fig_mom, 400), use_container_width=True)
+            st.plotly_chart(clean_chart(fig_mom, 400), width=True)
 
             # Change Indicators
             if len(mom) > 1:
@@ -1576,20 +1576,20 @@ with tabs[t]:
                                     title="Total Low Ratings per Day",
                                     line_shape='spline')
                 fig_trend.update_traces(line_color='#d32f2f', fill='tozeroy')
-                st.plotly_chart(fig_trend, use_container_width=True)
+                st.plotly_chart(fig_trend, width=True)
 
             with col2:
                 st.write("📊 **Main Topics causing Low Ratings**")
                 overall_topics = topic_summary.groupby('topics')['count'].sum().sort_values()
                 fig_topics = px.bar(overall_topics, orientation='h', color_discrete_sequence=['#d32f2f'])
-                st.plotly_chart(fig_topics, use_container_width=True)
+                st.plotly_chart(fig_topics, width=True)
 
             # 2. THE BRANCH HEATMAP
             st.write("🏪 **Problem Heatmap: Which Branches have which Problems?**")
             topic_matrix = topic_summary.pivot(index=analyzer.cols.get('BRANCH'), 
                                                columns='topics', values='count').fillna(0)
             fig_heatmap = px.imshow(topic_matrix, text_auto=True, color_continuous_scale='Reds', aspect='auto')
-            st.plotly_chart(fig_heatmap, use_container_width=True)
+            st.plotly_chart(fig_heatmap, width=True)
             
             # 3. THE DRILL DOWN (Interactive Comment Reader)
             st.markdown("---")
@@ -1624,7 +1624,7 @@ with tabs[t]:
         # Display as a searchable table
             st.dataframe(
                 unmapped_data, 
-                use_container_width=True,
+                width=True,
                 column_config={
                     analyzer.cols.get('COMMENT'): st.column_config.TextColumn("Raw Feedback", width="large"),
                     analyzer.cols.get('RATING'): st.column_config.NumberColumn("Rating", format="%d ⭐")
@@ -1678,7 +1678,7 @@ with tabs[t]:
             # Chat Interface
             q = st.text_area("Ask AI about your data:", placeholder="e.g., How can we improve delivery speed?", height=100)
             
-            if st.button(L('generate_insights'), type="primary", use_container_width=True):
+            if st.button(L('generate_insights'), type="primary", width=True):
                 with st.spinner("Analyzing data..."):
                     result = gen.generate_claude_insights(summary, q)
                     if result['success']:
@@ -1707,7 +1707,7 @@ with tabs[t]:  # Index 1 for Products
                 text='avg_rating'
             )
             fig.update_traces(texttemplate='%{text:.2f}', textposition='outside')
-            st.plotly_chart(clean_chart(fig, 400), use_container_width=True)
+            st.plotly_chart(clean_chart(fig, 400), width=True)
         else:
             st.info("No product data available")
     
@@ -1726,10 +1726,10 @@ with tabs[t]:  # Index 1 for Products
                 )
                 fig.update_traces(texttemplate='%{text} issues', textposition='outside')
                 fig.update_yaxes(title="Rating Impact (higher = worse)")
-                st.plotly_chart(clean_chart(fig, 400), use_container_width=True)
+                st.plotly_chart(clean_chart(fig, 400), width=True)
             
                 # Details table
-                st.dataframe(issue_cats, use_container_width=True, hide_index=True)
+                st.dataframe(issue_cats, width=True, hide_index=True)
             else:
                 st.info("No issue category data available")
         else:
@@ -1853,14 +1853,14 @@ with tabs[t]:  # Adjust index as needed
                     color_continuous_scale=['#FFC107', '#4CAF50']
                     )
                 fig_words.update_layout(height=600, showlegend=False)
-                st.plotly_chart(fig_words, use_container_width=True)
+                st.plotly_chart(fig_words, width=True)
     
             # Show top words table
             with st.expander("📋 View Top 50 Words"):
                 df_top_words = pd.DataFrame([
             {'کلمه': k, 'تعداد': v} for k, v in list(word_freq.items())[:50]
         ])
-            st.dataframe(df_top_words, use_container_width=True, hide_index=True)
+            st.dataframe(df_top_words, width=True, hide_index=True)
         else:
             st.warning("No text data available for word cloud")
 
@@ -1884,7 +1884,7 @@ with tabs[t]:  # Adjust index as needed
                     color_continuous_scale=['#2196F3', '#4CAF50']
                 )
                 fig_bi.update_layout(height=450, showlegend=False, yaxis=dict(tickfont=dict(size=11)))
-                st.plotly_chart(fig_bi, use_container_width=True)
+                st.plotly_chart(fig_bi, width=True)
         
         with col_ng2:
             st.markdown("**Trigrams (3-word phrases)**")
@@ -1899,7 +1899,7 @@ with tabs[t]:  # Adjust index as needed
                     color_continuous_scale=['#FF9800', '#F44336']
                 )
                 fig_tri.update_layout(height=450, showlegend=False, yaxis=dict(tickfont=dict(size=11)))
-                st.plotly_chart(fig_tri, use_container_width=True)
+                st.plotly_chart(fig_tri, width=True)
         
         # ==========================================
         # KEYWORDS BY RATING
@@ -2020,7 +2020,7 @@ with tabs[t]:  # Adjust index as needed
                 )
                 fig_sent.update_traces(textposition='outside', textinfo='label+percent')
                 fig_sent.update_layout(height=350, showlegend=False)
-                st.plotly_chart(fig_sent, use_container_width=True)
+                st.plotly_chart(fig_sent, width=True)
         
         with col_sent2:
             st.markdown("**Rating vs Sentiment Matrix**")
@@ -2036,7 +2036,7 @@ with tabs[t]:  # Adjust index as needed
                     text_auto=True
                 )
                 fig_rs.update_layout(height=350)
-                st.plotly_chart(fig_rs, use_container_width=True)
+                st.plotly_chart(fig_rs, width=True)
         
         # ==========================================
         # INSIGHTS SUMMARY
@@ -2141,7 +2141,7 @@ with tabs[t]:  # Adjust index as needed
                             showscale=False
                         ))
                         fig_cm.update_layout(height=300, margin=dict(l=10, r=10, t=30, b=10))
-                        st.plotly_chart(fig_cm, use_container_width=True)
+                        st.plotly_chart(fig_cm, width=True)
                         
                     with col_feat:
                         st.markdown("##### 📈 Feature Importance")
@@ -2156,7 +2156,7 @@ with tabs[t]:  # Adjust index as needed
                             color_continuous_scale=['#FFC107', '#4CAF50']
                         )
                         fig_imp.update_layout(height=300, showlegend=False, margin=dict(l=10, r=10, t=30, b=10))
-                        st.plotly_chart(fig_imp, use_container_width=True)
+                        st.plotly_chart(fig_imp, width=True)
                 
                         st.success(f"✅ Model trained! Detractor rate: {results['detractor_rate']}%")
         
@@ -2184,7 +2184,7 @@ with tabs[t]:  # Adjust index as needed
                             low_count = risk_counts.get('Low', 0)
                             st.metric("🟢 Low Risk", low_count)
                 
-                        st.dataframe(high_risk, use_container_width=True, hide_index=True)
+                        st.dataframe(high_risk, width=True, hide_index=True)
                     else:
                         st.info("No risk data available")
             m += 1
@@ -2241,7 +2241,7 @@ with tabs[t]:  # Adjust index as needed
                         labels={'x': 'Number of Clusters (K)', 'y': 'Inertia'}
                     )
                     fig_elbow.update_layout(height=300)
-                    st.plotly_chart(fig_elbow, use_container_width=True)
+                    st.plotly_chart(fig_elbow, width=True)
                 
                 with col_pca:
                     st.markdown("##### 🎯 Cluster Visualization (PCA)")
@@ -2254,11 +2254,11 @@ with tabs[t]:  # Adjust index as needed
                         color_discrete_sequence=cluster_colors
                     )
                     fig_pca.update_layout(height=300)
-                    st.plotly_chart(fig_pca, use_container_width=True)
+                    st.plotly_chart(fig_pca, width=True)
                 
                 # Full stats table
                 with st.expander("📋 View Full Cluster Statistics"):
-                    st.dataframe(cluster_df, use_container_width=True, hide_index=True)
+                    st.dataframe(cluster_df, width=True, hide_index=True)
     m += 1
     
     # 3. SUB-TAB: Association rules
@@ -2311,7 +2311,7 @@ with tabs[t]:  # Adjust index as needed
                     st.markdown("##### 📊 Frequent Issue Combinations")
                     itemsets_df = pd.DataFrame(rules_results['frequent_itemsets'])
                     if not itemsets_df.empty:
-                        st.dataframe(itemsets_df, use_container_width=True, hide_index=True)
+                        st.dataframe(itemsets_df, width=True, hide_index=True)
 
     # Increment the ML sub-tab index
     m += 1
@@ -2372,7 +2372,7 @@ with tabs[t]:  # Adjust index as needed
                 anomalies_df = pd.DataFrame(anomaly_results['top_anomalies'])
                 
                 if not anomalies_df.empty:
-                    st.dataframe(anomalies_df, use_container_width=True, hide_index=True)
+                    st.dataframe(anomalies_df, width=True, hide_index=True)
                 else:
                     st.info("No specific anomaly records to display.")
 
@@ -2426,7 +2426,7 @@ with tabs[t]:  # Adjust index as needed
                             showscale=False
                         ))
                         fig_cm.update_layout(height=300, margin=dict(l=10, r=10, t=30, b=10))
-                        st.plotly_chart(fig_cm, use_container_width=True)
+                        st.plotly_chart(fig_cm, width=True)
                         
                         with col_fi:
                             st.markdown("##### 📈 Feature Importance")
@@ -2441,7 +2441,7 @@ with tabs[t]:  # Adjust index as needed
                                 color_continuous_scale=['#BBDEFB', '#2196F3']
                             )
                             fig_imp.update_layout(height=300, showlegend=False, margin=dict(l=10, r=10, t=30, b=10))
-                            st.plotly_chart(fig_imp, use_container_width=True)
+                            st.plotly_chart(fig_imp, width=True)
                             
                 st.markdown("---")
         
@@ -2463,7 +2463,7 @@ with tabs[t]:  # Adjust index as needed
                     with col_cr3:
                         st.metric("🟢 Low Risk", risk_counts.get('Low', 0))
                 
-                        st.dataframe(churn_risk, use_container_width=True, hide_index=True)
+                        st.dataframe(churn_risk, width=True, hide_index=True)
                 else:
                     st.info("No churn risk data available")
 
@@ -2479,7 +2479,7 @@ st.markdown(f"### {L('export_section')}")
 c_exp_1, c_exp_2, c_exp_3 = st.columns(3)
 
 with c_exp_1:
-    if st.button(f"📥 {L('export_excel')}", use_container_width=True):
+    if st.button(f"📥 {L('export_excel')}", width=True):
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         fp = os.path.join(REPORTS_DIR, f"full_analysis_{ts}.xlsx")
         
@@ -3763,7 +3763,7 @@ with c_exp_1:
                         f,
                         f"shila_full_report_{ts}.xlsx",
                         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-                        use_container_width=True
+                        width=True
                     )
                 
                 st.success(f"✅ Excel report generated with 22 sheets and embedded charts!")
@@ -3773,10 +3773,10 @@ with c_exp_1:
                 st.exception(e)
 
 with c_exp_2:
-    st.button(f"📊 {L('export_pptx')}", disabled=True, use_container_width=True, help="Coming Soon")
+    st.button(f"📊 {L('export_pptx')}", disabled=True, width=True, help="Coming Soon")
 
 with c_exp_3:
-    if st.button(f"📝 {L('export_notebooklm')}", use_container_width=True):
+    if st.button(f"📝 {L('export_notebooklm')}", width=True):
         ts = datetime.now().strftime("%Y%m%d_%H%M%S")
         
         # Build comprehensive markdown report
@@ -4160,6 +4160,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
