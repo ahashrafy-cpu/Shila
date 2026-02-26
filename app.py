@@ -1506,7 +1506,7 @@ with tabs[t]:
             fig.update_xaxes(tickangle=-45, row=1, col=1)
             fig.update_xaxes(tickangle=-45, row=2, col=1)
 
-        st.plotly_chart(clean_chart(fig, 600), use_container_width=True)
+        st.plotly_chart(clean_chart(fig, 600), width='stretch)
         
         # ==========================================
         # CHANGE METRICS (for weekly/monthly)
@@ -1556,7 +1556,7 @@ with tabs[t]:
             fig_mom = make_subplots(specs=[[{"secondary_y": True}]])
             fig_mom.add_trace(go.Bar(x=mom['year_month'], y=mom['order_count'], name='Orders', marker_color='#4CAF50', opacity=0.6), secondary_y=False)
             fig_mom.add_trace(go.Scatter(x=mom['year_month'], y=mom['avg_rating'], name='Avg Rating', mode='lines+markers', line=dict(color='#2196F3', width=3)), secondary_y=True)
-            st.plotly_chart(clean_chart(fig_mom, 400), use_container_width=True)
+            st.plotly_chart(clean_chart(fig_mom, 400), width='stretch)
 
             if len(mom) > 1:
                 latest = mom.iloc[-1]
@@ -1585,19 +1585,19 @@ with tabs[t]:
                                     title="Total Low Ratings per Day",
                                     line_shape='spline')
                 fig_trend.update_traces(line_color='#d32f2f', fill='tozeroy')
-                st.plotly_chart(fig_trend, use_container_width=True)
+                st.plotly_chart(fig_trend, width='stretch)
 
             with col2:
                 st.write("📊 **Main Topics causing Low Ratings**")
                 overall_topics = topic_summary.groupby('topics')['count'].sum().sort_values()
                 fig_topics = px.bar(overall_topics, orientation='h', color_discrete_sequence=['#d32f2f'])
-                st.plotly_chart(fig_topics, use_container_width=True)
+                st.plotly_chart(fig_topics, width='stretch)
 
             st.write("🏪 **Problem Heatmap: Which Branches have which Problems?**")
             topic_matrix = topic_summary.pivot(index=analyzer.cols.get('BRANCH'), 
                                                columns='topics', values='count').fillna(0)
             fig_heatmap = px.imshow(topic_matrix, text_auto=True, color_continuous_scale='Reds', aspect='auto')
-            st.plotly_chart(fig_heatmap, use_container_width=True)
+            st.plotly_chart(fig_heatmap, width='stretch)
             
             st.markdown("---")
             st.write("💬 **Drill Down: Read specific complaints by hour**")
@@ -1630,7 +1630,7 @@ with tabs[t]:
     
             st.dataframe(
                 unmapped_data, 
-                use_container_width=True,
+                width='stretch,
                 column_config={
                     analyzer.cols.get('COMMENT'): st.column_config.TextColumn("Raw Feedback", width="large"),
                     analyzer.cols.get('RATING'): st.column_config.NumberColumn("Rating", format="%d ⭐")
@@ -4165,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
