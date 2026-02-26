@@ -1418,6 +1418,9 @@ with tabs[t]:
     # ==========================================
     # LOAD DATA BASED ON GRANULARITY
     # ==========================================
+    data = pd.DataFrame()  # ← ADD THIS LINE
+    x_col = 'date'         # ← ADD THIS LINE  
+    x_label = "Date"       # ← ADD THIS LINE
     if granularity == "🕒 Hourly":
         st.markdown(f"### 🕒 {L('hourly_rating_trend')}")
         st.caption("Performance across the 24-hour cycle")
@@ -4160,6 +4163,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
