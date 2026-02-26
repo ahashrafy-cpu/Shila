@@ -1506,7 +1506,7 @@ with tabs[t]:
             fig.update_xaxes(tickangle=-45, row=1, col=1)
             fig.update_xaxes(tickangle=-45, row=2, col=1)
 
-        st.plotly_chart(clean_chart(fig, 600), width='stretch)
+        st.plotly_chart(clean_chart(fig, 600), width='stretch')
         
         # ==========================================
         # CHANGE METRICS (for weekly/monthly)
@@ -4165,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
