@@ -1408,53 +1408,58 @@ with tabs[t]:
         st.markdown("### 📈 Performance Trends")
         granularity = st.radio(
             "Select time view:",
-            ["🕒 Hourly", "📅 Daily", "📆 Weekly", "🗓️ Monthly"],
+            ["Hourly", "Daily", "Weekly", "Monthly"],
             horizontal=True,
             key="trend_granularity"
         )
     else:
-        granularity = "📅 Daily"  # Default for standard files
+        granularity = "Daily"  # Default for standard files
 
     # ==========================================
     # LOAD DATA BASED ON GRANULARITY
     # ==========================================
-    data = pd.DataFrame()  # ← ADD THIS LINE
-    x_col = 'date'         # ← ADD THIS LINE  
-    x_label = "Date"       # ← ADD THIS LINE
-    if granularity == "🕒 Hourly":
+    data = pd.DataFrame()
+    x_col = 'date'    
+    x_label = "Date"
+    if granularity == "Hourly":
         st.markdown(f"### 🕒 {L('hourly_rating_trend')}")
         st.caption("Performance across the 24-hour cycle")
         data = analyzer.get_hourly_trends()
         x_col = 'hour'
         x_label = "Hour (00:00 - 23:00)"
 
-    elif granularity == "📅 Daily":
+    elif granularity == "Daily":
         st.markdown(f"### 📅 {L('daily_trend')}")
         st.caption("Day-by-day performance")
         data = analyzer.get_daily_trends()
         x_col = 'date'
         x_label = "Date"
 
-    elif granularity == "📆 Weekly":
+    elif granularity == "Weekly":
         st.markdown("### 📆 Weekly Trends")
         st.caption("Aggregated weekly performance")
-        data = analyzer.get_weekly_trends()  # NEW METHOD NEEDED
-        st.write("DEBUG weekly:", len(data), "rows")  # ← ADD
-        st.dataframe(data)                             # ← ADD
+        data = analyzer.get_weekly_trends() 
+        st.write("DEBUG weekly:", len(data), "rows") 
+        st.dataframe(data)       
         x_col = 'week'
         x_label = "Week"
 
-    elif granularity == "🗓️ Monthly":
+    elif granularity == "Monthly":
         st.markdown("### 🗓️ Monthly Trends")
         st.caption("Month-over-month performance")
         data = analyzer.get_monthly_trends()  # NEW METHOD NEEDED
         x_col = 'month'
         x_label = "Month"
+    
+    st.caption(f"🔍 View: **{granularity}** | Data rows: **{len(data)}** | X column: **{x_col}**")
+    if not data.empty:
+        st.dataframe(data.head(5))
+    
 
     # ==========================================
-    # RENDER CHART (works for all granularities)
+    # RENDER CHART
     # ==========================================
-    if not data.empty:
+    if not data.empty and x_col in data.columns:
         fig = make_subplots(
             rows=2, cols=1, 
             subplot_titles=('Average Rating', 'Order Volume'), 
@@ -1492,26 +1497,26 @@ with tabs[t]:
         fig.update_xaxes(title_text=x_label, row=2, col=1)
         
         # Force integer ticks for hourly view
-        if granularity == "🕒 Hourly":
+        if granularity == "Hourly":
             fig.update_xaxes(tickmode='linear', tick0=0, dtick=1, row=1, col=1)
             fig.update_xaxes(tickmode='linear', tick0=0, dtick=1, row=2, col=1)
         
-        # Rotate labels for weekly/monthly if many data points
-        if granularity in ["📆 Weekly", "🗓️ Monthly"]:
+        # Rotate labels for weekly/monthly
+        if granularity in ["Weekly", "Monthly"]:
             fig.update_xaxes(tickangle=-45, row=1, col=1)
             fig.update_xaxes(tickangle=-45, row=2, col=1)
 
-        st.plotly_chart(clean_chart(fig, 600), width='stretch')
+        st.plotly_chart(clean_chart(fig, 600), use_container_width=True)
         
         # ==========================================
         # CHANGE METRICS (for weekly/monthly)
         # ==========================================
-        if granularity in ["📆 Weekly", "🗓️ Monthly"] and len(data) > 1:
+        if granularity in ["Weekly", "Monthly"] and len(data) > 1:
             st.markdown("---")
             latest = data.iloc[-1]
             prev = data.iloc[-2]
             
-            period_label = "Week" if granularity == "📆 Weekly" else "Month"
+            period_label = "Week" if granularity == "Weekly" else "Month"
             
             cols_metric = st.columns(3)
             cols_metric[0].metric(
@@ -1539,7 +1544,9 @@ with tabs[t]:
     else:
         st.info("Insufficient data to generate trends for this time period.")
     
-    # 2. MONTH-OVER-MONTH (Hide for single-day SnappFood files)
+    # ==========================================
+    # MONTH-OVER-MONTH (standard files only)
+    # ==========================================
     if not is_sf:
         st.markdown("---")
         st.markdown(f"#### 📅 {L('mom_comparison')}")
@@ -1549,59 +1556,56 @@ with tabs[t]:
             fig_mom = make_subplots(specs=[[{"secondary_y": True}]])
             fig_mom.add_trace(go.Bar(x=mom['year_month'], y=mom['order_count'], name='Orders', marker_color='#4CAF50', opacity=0.6), secondary_y=False)
             fig_mom.add_trace(go.Scatter(x=mom['year_month'], y=mom['avg_rating'], name='Avg Rating', mode='lines+markers', line=dict(color='#2196F3', width=3)), secondary_y=True)
-            st.plotly_chart(clean_chart(fig_mom, 400), width='stretch')
+            st.plotly_chart(clean_chart(fig_mom, 400), use_container_width=True)
 
-            # Change Indicators
             if len(mom) > 1:
                 latest = mom.iloc[-1]
-                cols_metric = st.columns(3) # Always 3 columns, we'll leave one empty if needed
+                cols_metric = st.columns(3)
                 cols_metric[0].metric("Rating Change", f"{latest['avg_rating']:.2f}", f"{latest['rating_change']:+.2f}")
                 cols_metric[1].metric("Orders Change", f"{latest['order_count']:,}", f"{latest['orders_change_pct']:+.1f}%")
                 
-                # NPS only for standard
                 if 'nps_score' in latest and 'nps_change' in latest:
                     cols_metric[2].metric("NPS Change", f"{latest['nps_score']:.1f}", f"{latest['nps_change']:+.1f}")
     
+    # ==========================================
+    # LOW-RATING DEEP DIVE (SnappFood only)
+    # ==========================================
     if is_sf:
         st.markdown("---")
         st.markdown("## 🕵️ Weekly Low-Rating Deep Dive (1-3 Stars)")
 
-        # Get data from both analysis methods
         low_comments = analyzer.get_low_rating_comments_by_hour()
         topic_summary, weekly_trend = analyzer.get_low_rating_deep_dive()
 
         if not weekly_trend.empty or not topic_summary.empty:
-            # 1. THE BIG PICTURE (Weekly Trends & Topics)
             col1, col2 = st.columns([1, 1])
             with col1:
                 st.write("📅 **Weekly Trend of Complaints**")
-                fig_trend = px.line(weekly_trend, analyzer.cols.get('CREATED_AT'), y='complaint_count', # ensure x matches your method's output
+                fig_trend = px.line(weekly_trend, analyzer.cols.get('CREATED_AT'), y='complaint_count',
                                     title="Total Low Ratings per Day",
                                     line_shape='spline')
                 fig_trend.update_traces(line_color='#d32f2f', fill='tozeroy')
-                st.plotly_chart(fig_trend, width='stretch')
+                st.plotly_chart(fig_trend, use_container_width=True)
 
             with col2:
                 st.write("📊 **Main Topics causing Low Ratings**")
                 overall_topics = topic_summary.groupby('topics')['count'].sum().sort_values()
                 fig_topics = px.bar(overall_topics, orientation='h', color_discrete_sequence=['#d32f2f'])
-                st.plotly_chart(fig_topics, width='stretch')
+                st.plotly_chart(fig_topics, use_container_width=True)
 
-            # 2. THE BRANCH HEATMAP
             st.write("🏪 **Problem Heatmap: Which Branches have which Problems?**")
             topic_matrix = topic_summary.pivot(index=analyzer.cols.get('BRANCH'), 
                                                columns='topics', values='count').fillna(0)
             fig_heatmap = px.imshow(topic_matrix, text_auto=True, color_continuous_scale='Reds', aspect='auto')
-            st.plotly_chart(fig_heatmap, width='stretch')
+            st.plotly_chart(fig_heatmap, use_container_width=True)
             
-            # 3. THE DRILL DOWN (Interactive Comment Reader)
             st.markdown("---")
             st.write("💬 **Drill Down: Read specific complaints by hour**")
         
             selected_hour = st.select_slider(
-            "Select an hour to read comments:",
-            options=sorted(low_comments['hour'].unique()),
-            format_func=lambda x: f"{int(x):02d}:00"
+                "Select an hour to read comments:",
+                options=sorted(low_comments['hour'].unique()),
+                format_func=lambda x: f"{int(x):02d}:00"
             )
         
             hour_filtered = low_comments[low_comments['hour'] == selected_hour]
@@ -1624,19 +1628,17 @@ with tabs[t]:
         if not unmapped_data.empty:
             st.write(f"Found **{len(unmapped_data)}** comments in **{view_type}**.")
     
-        # Display as a searchable table
             st.dataframe(
                 unmapped_data, 
-                width='stretch',
+                use_container_width=True,
                 column_config={
                     analyzer.cols.get('COMMENT'): st.column_config.TextColumn("Raw Feedback", width="large"),
                     analyzer.cols.get('RATING'): st.column_config.NumberColumn("Rating", format="%d ⭐")
                 }
             )
     
-        # Pro-tip for the user
-        if view_type == "Other":
-            st.info("💡 **Tip:** Look for recurring words in these comments. Add them to your `ASPECTS` dictionary in `config.py` to move these rows into a specific category!")
+            if view_type == "Other":
+                st.info("💡 **Tip:** Look for recurring words in these comments. Add them to your `ASPECTS` dictionary in `config.py` to move these rows into a specific category!")
         else:
             st.success(f"No data found for {view_type}.")
         
@@ -4163,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
