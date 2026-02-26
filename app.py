@@ -1556,7 +1556,7 @@ with tabs[t]:
             fig_mom = make_subplots(specs=[[{"secondary_y": True}]])
             fig_mom.add_trace(go.Bar(x=mom['year_month'], y=mom['order_count'], name='Orders', marker_color='#4CAF50', opacity=0.6), secondary_y=False)
             fig_mom.add_trace(go.Scatter(x=mom['year_month'], y=mom['avg_rating'], name='Avg Rating', mode='lines+markers', line=dict(color='#2196F3', width=3)), secondary_y=True)
-            st.plotly_chart(clean_chart(fig_mom, 400), width='stretch)
+            st.plotly_chart(clean_chart(fig_mom, 400), width='stretch')
 
             if len(mom) > 1:
                 latest = mom.iloc[-1]
@@ -4165,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
