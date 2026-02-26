@@ -1585,7 +1585,7 @@ with tabs[t]:
                                     title="Total Low Ratings per Day",
                                     line_shape='spline')
                 fig_trend.update_traces(line_color='#d32f2f', fill='tozeroy')
-                st.plotly_chart(fig_trend, width='stretch)
+                st.plotly_chart(fig_trend, width='stretch')
 
             with col2:
                 st.write("📊 **Main Topics causing Low Ratings**")
@@ -4165,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
