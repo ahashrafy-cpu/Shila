@@ -1591,13 +1591,13 @@ with tabs[t]:
                 st.write("📊 **Main Topics causing Low Ratings**")
                 overall_topics = topic_summary.groupby('topics')['count'].sum().sort_values()
                 fig_topics = px.bar(overall_topics, orientation='h', color_discrete_sequence=['#d32f2f'])
-                st.plotly_chart(fig_topics, width='stretch)
+                st.plotly_chart(fig_topics, width='stretch')
 
             st.write("🏪 **Problem Heatmap: Which Branches have which Problems?**")
             topic_matrix = topic_summary.pivot(index=analyzer.cols.get('BRANCH'), 
                                                columns='topics', values='count').fillna(0)
             fig_heatmap = px.imshow(topic_matrix, text_auto=True, color_continuous_scale='Reds', aspect='auto')
-            st.plotly_chart(fig_heatmap, width='stretch)
+            st.plotly_chart(fig_heatmap, width='stretch')
             
             st.markdown("---")
             st.write("💬 **Drill Down: Read specific complaints by hour**")
@@ -1630,7 +1630,7 @@ with tabs[t]:
     
             st.dataframe(
                 unmapped_data, 
-                width='stretch,
+                width='stretch',
                 column_config={
                     analyzer.cols.get('COMMENT'): st.column_config.TextColumn("Raw Feedback", width="large"),
                     analyzer.cols.get('RATING'): st.column_config.NumberColumn("Rating", format="%d ⭐")
@@ -4165,6 +4165,7 @@ with c_exp_3:
             )
         
         st.success(f"✅ Report generated with {len(md_content):,} characters!")
+
 
 
 
